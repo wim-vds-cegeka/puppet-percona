@@ -25,9 +25,9 @@ class percona::cluster::config(
     character_set_server => 'utf8',
     pxc_strict_mode    => undef,
     wsrep_sst_auth     => undef,
-    wsrep_sst_receive_address => $::ipaddress,
-    wsrep_node_address => "${::ipaddress}:4567",
-    wsrep_node_incoming_address => "${::ipaddress}:4567",
+    wsrep_sst_receive_address => $facts['networking']['ip'],
+    wsrep_node_address        => "${facts['networking']['ip']}:4567",
+    wsrep_node_incoming_address => "${facts['networking']['ip']}:4567",
     wsrep_cluster_address => "gcomm://${cluster_address}",
     wsrep_cluster_name  => $cluster_name,
     wsrep_provider => '/usr/lib64/libgalera_smm.so',
@@ -96,6 +96,7 @@ class percona::cluster::config(
   if $config['slow_query_log'] == 'ON' {
 #   https://www.percona.com/blog/2013/04/18/rotating-mysql-slow-logs-safely/
     logrotate::rule { 'mysql-slow':
+        ensure        => 'absent',
         path          => '/var/log/mysql-slow.log',
         create        => true,
         create_owner  => 'mysql',
@@ -112,7 +113,7 @@ class percona::cluster::config(
     }
   }
 
-  if $::selinux {
+  if $facts['selinux'] {
     notify {'ssl-disable':
       message => 'Percona Cluster is not selinux compatible at this point in
                   time.'
@@ -140,9 +141,9 @@ class percona::cluster::config(
     }
     class { '::percona::cluster::ssl':
       ssl_autogen => $ssl_autogen,
-      ssl_ca   => $ssl_ca,
-      ssl_key  => $ssl_key,
-      ssl_cert => $ssl_cert,
+      ssl_ca      => $ssl_ca,
+      ssl_key     => $ssl_key,
+      ssl_cert    => $ssl_cert,
     }
   }
 

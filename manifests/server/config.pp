@@ -80,6 +80,7 @@ class percona::server::config (
   if $config['slow_query_log'] == 'ON' {
 #   https://www.percona.com/blog/2013/04/18/rotating-mysql-slow-logs-safely/
     logrotate::rule { 'mysql-slow':
+        ensure        => absent,
         path          => '/var/log/mysql-slow.log',
         create        => true,
         create_owner  => 'mysql',
@@ -96,7 +97,7 @@ class percona::server::config (
     }
   }
 
-  if $::selinux {
+  if $facts['selinux'] {
     file_line {
       'selinux_context_mysql_datadir':
         path => '/etc/selinux/targeted/contexts/files/file_contexts.local',
@@ -135,9 +136,9 @@ class percona::server::config (
   if $ssl {
     class { '::percona::server::ssl':
       ssl_autogen => $ssl_autogen,
-      ssl_ca   => $ssl_ca,
-      ssl_key  => $ssl_key,
-      ssl_cert => $ssl_cert,
+      ssl_ca      => $ssl_ca,
+      ssl_key     => $ssl_key,
+      ssl_cert    => $ssl_cert,
     }
   }
 
