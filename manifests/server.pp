@@ -33,10 +33,11 @@ class percona::server (
   }
 
   class { 'percona::server::package':
-    package_name    => $package_name,
-    version_server  => $version_server,
-    versionlock     => $versionlock,
-    xtrabackup_name => $xtrabackup_name
+    package_name       => $package_name,
+    version_server     => $version_server,
+    versionlock        => $versionlock,
+    xtrabackup_name    => $xtrabackup_name,
+    version_xtrabackup => $version_xtrabackup
   }
 
   class { 'percona::server::config':
